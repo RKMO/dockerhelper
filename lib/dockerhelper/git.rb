@@ -1,8 +1,10 @@
 module Dockerhelper
   class Git
-    attr_reader :git_root
-    def initialize(git_root)
+    attr_reader :git_root, :rev_length
+
+    def initialize(git_root, rev_length: 8)
       @git_root = git_root
+      @rev_length = rev_length
     end
 
     def clone(git_repo_url, branch)
@@ -22,7 +24,7 @@ module Dockerhelper
     end
 
     def latest_rev
-      rev_list[0..7]
+      rev_list[0...rev_length]
     end
   end
 end
