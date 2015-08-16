@@ -14,7 +14,7 @@ module Dockerhelper
           end
 
           desc 'Build docker image'
-          task :build do
+          task :docker_build do
             config.docker.build(config.dockerfile, tag: config.docker_image)
           end
 
@@ -35,12 +35,13 @@ module Dockerhelper
           end
 
           desc 'Git clone, build image, and push image to Docker Hub'
-          task :deploy => [:pull, :build, :repo_tag, :push]
+          task :build => [:pull, :docker_build, :repo_tag, :push, 'kube:gen_rc']
 
           namespace :kube do
             desc 'Generate replication controller for the current build'
             task :gen_rc do
               config.kubernetes.write_replication_controller
+              puts "Created replication-controller: #{config.kubernetes.replication_controller_filename}"
             end
 
             desc 'Get current replication controller version'
@@ -49,8 +50,19 @@ module Dockerhelper
             end
 
             desc 'Run replication controller rolling-update'
-            task :rolling_update do
+            task :rolling_update => [:gen_rc] do
               config.kubernetes.rolling_update
+            end
+
+            desc 'Create replication controller'
+            task :create_rc => [:gen_rc] do
+              config.kubernetes.replication_controller_create
+            end
+
+            desc 'Delete replication controller (USE WITH CAUTION)'
+            task :delete_rc do
+              # TODO add "are you sure?" prompt
+              config.kubernetes.replication_controller_delete
             end
           end
         end

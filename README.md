@@ -56,5 +56,4 @@ rake docker:production:kube:gen_rc  # Generate replication controller for the cu
 rake docker:production:pull         # Pull git repo
 rake docker:production:push         # Push docker images to Docker Hub
 rake docker:production:repo_tag     # Tag docker image
-
 ```

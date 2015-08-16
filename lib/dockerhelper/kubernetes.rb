@@ -33,6 +33,16 @@ module Dockerhelper
         label: 'kubectl-get-rc').run
     end
 
+    def replication_controller_create
+      Command.new("kubectl create -f #{replication_controller_filename}",
+        label: 'kubectl-create-rc').run
+    end
+
+    def replication_controller_delete
+      Command.new("kubectl delete -f #{replication_controller_filename}",
+        label: 'kubectl-delete-rc').run
+    end
+
     def replication_controller_yaml
       yaml_in = File.read(config.kube_rc_template)
       ERB.new(yaml_in).result(binding)
