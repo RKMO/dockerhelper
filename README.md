@@ -1,8 +1,8 @@
 # Dockerhelper
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/dockerhelper`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Helper classes and rake tasks to build Docker images, push them to DockerHub,
+and deploy updates to Kubernetes. Assumes a rather specific workflow for
+building Docker images and deploying them to Kubernetes.
 
 ## Installation
 
@@ -22,15 +22,39 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Example usage in a `Rakefile`:
 
-## Development
+```ruby
+require 'dockerhelper'
+require 'dockerhelper/rake'
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake false` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+project_root = File.expand_path('../../', __FILE__)
+config = Dockerhelper.configure do |c|
+  c.app_name                = 'project'
+  c.environment             = :production
+  c.git_repo_url            = 'git@github.com:org/project.git'
+  c.git_root                = File.join(project_root, 'tmp/repo')
+  c.git_branch              = ENV['GIT_BRANCH'] || 'master'
+  c.dockerfile              = 'docker/Dockerfile.production'
+  c.docker_image            = 'project-image-name'
+  c.docker_repo             = 'org/project'
+  c.docker_repo_tag_prefix  = 'prd-'
+  c.kube_rc_template        = File.expand_path('../project-rc.yml.erb', __FILE__)
+  c.kube_rc_dest_dir        = File.dirname(__FILE__)
+end
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Dockerhelper::Tasks.init(config)
+```
 
-## Contributing
+The above will define rake tasks, for example:
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/dockerhelper.
+```
+rake docker:production:build        # Build docker image
+rake docker:production:deploy       # Git clone, build image, and push image to Docker Hub
+rake docker:production:info         # Print config info
+rake docker:production:kube:gen_rc  # Generate replication controller for the current build
+rake docker:production:pull         # Pull git repo
+rake docker:production:push         # Push docker images to Docker Hub
+rake docker:production:repo_tag     # Tag docker image
 
+```

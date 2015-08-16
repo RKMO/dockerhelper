@@ -2,6 +2,7 @@ require "dockerhelper/config"
 require "dockerhelper/command"
 require "dockerhelper/docker"
 require "dockerhelper/git"
+require "dockerhelper/kubernetes"
 require "dockerhelper/version"
 
 module Dockerhelper

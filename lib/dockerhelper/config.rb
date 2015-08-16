@@ -1,5 +1,6 @@
 module Dockerhelper
   class Config
+    attr_accessor :app_name
     attr_accessor :git_root
     attr_accessor :git_branch
     attr_accessor :git_repo_url
@@ -9,10 +10,14 @@ module Dockerhelper
     attr_accessor :rev_length
     attr_accessor :dockerfile
     attr_accessor :docker_repo_tag_prefix
+    attr_accessor :environment
+    attr_accessor :kube_rc_template
+    attr_accessor :kube_rc_dest_dir
 
     def initialize
       # defaults
       @rev_length = 8
+      @kube_rc_dest_dir = Dir.pwd
     end
 
     def git
@@ -21,6 +26,10 @@ module Dockerhelper
 
     def docker
       @docker ||= Docker.new(chdir: git_root)
+    end
+
+    def kubernetes
+      @kubernetes ||= Kubernetes.new(self)
     end
 
     def docker_repo_tag

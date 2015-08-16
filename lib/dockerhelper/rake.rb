@@ -4,9 +4,9 @@ module Dockerhelper
   module Tasks
     extend ::Rake::DSL
 
-    def self.init(config, environment: :production)
+    def self.init(config)
       namespace :docker do
-        namespace(environment) do
+        namespace(config.environment) do
 
           desc 'Print config info'
           task :info do
@@ -36,6 +36,23 @@ module Dockerhelper
 
           desc 'Git clone, build image, and push image to Docker Hub'
           task :deploy => [:pull, :build, :repo_tag, :push]
+
+          namespace :kube do
+            desc 'Generate replication controller for the current build'
+            task :gen_rc do
+              config.kubernetes.write_replication_controller
+            end
+
+            desc 'Get current replication controller version'
+            task :current_rc do
+              puts config.kubernetes.current_rc
+            end
+
+            desc 'Run replication controller rolling-update'
+            task :rolling_update do
+              config.kubernetes.rolling_update
+            end
+          end
         end
       end
     end
