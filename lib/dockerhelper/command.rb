@@ -1,3 +1,5 @@
+require 'open3'
+
 module Dockerhelper
   class Command
     attr_reader :cmd, :label, :chdir
