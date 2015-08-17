@@ -13,6 +13,7 @@ module Dockerhelper
     attr_accessor :environment
     attr_accessor :kube_rc_template
     attr_accessor :kube_rc_dest_dir
+    attr_accessor :env_vars
 
     def initialize
       # defaults
@@ -34,6 +35,17 @@ module Dockerhelper
 
     def docker_repo_tag
       @docker_tag || "#{docker_repo_tag_prefix}#{git.latest_rev}"
+    end
+
+    def check_env_vars!
+      return unless @env_vars
+      unless @env_vars.respond_to?(:reject)
+        raise ArgumentError.new('Expected an array of env_vars')
+      end
+      undefined = @env_vars.reject(&ENV.method(:has_key?))
+      unless undefined.empty?
+        raise StandardError.new("The environment must define #{undefined.join ', '}")
+      end
     end
   end
 end

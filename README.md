@@ -41,6 +41,7 @@ config = Dockerhelper.configure do |c|
   c.docker_repo_tag_prefix  = 'prd-'
   c.kube_rc_template        = File.expand_path('../project-rc.yml.erb', __FILE__)
   c.kube_rc_dest_dir        = File.dirname(__FILE__)
+  c.env_vars                = %w(REQUIRED_ENV_VAR)
 end
 
 Dockerhelper::Tasks.init(config)
