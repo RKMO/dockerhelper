@@ -39,8 +39,7 @@ module Dockerhelper
     end
 
     def replication_controller_delete
-      Command.new("kubectl delete -f #{replication_controller_filename}",
-        label: 'kubectl-delete-rc').run
+      Command.new("kubectl delete rc #{current_rc}", label: 'kubectl-delete-rc').run
     end
 
     def replication_controller_yaml
