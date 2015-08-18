@@ -13,6 +13,7 @@ module Dockerhelper
     attr_accessor :environment
     attr_accessor :kube_rc_template
     attr_accessor :kube_rc_dest_dir
+    attr_accessor :prebuild_command
 
     def initialize
       # defaults
@@ -34,6 +35,10 @@ module Dockerhelper
 
     def docker_repo_tag
       @docker_tag || "#{docker_repo_tag_prefix}#{git.latest_rev}"
+    end
+
+    def prebuild?
+      @prebuild_command && !@prebuild_command.empty?
     end
   end
 end
