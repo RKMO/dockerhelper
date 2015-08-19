@@ -13,6 +13,11 @@ module Dockerhelper
             puts config.inspect
           end
 
+          desc 'Prepare to build docker image'
+          task :prebuild do
+            Command.new(config.prebuild_command, label: 'prebuild').run if config.prebuild?
+          end
+
           desc 'Build docker image'
           task :docker_build do
             config.docker.build(config.dockerfile, tag: config.docker_image)
@@ -35,7 +40,7 @@ module Dockerhelper
           end
 
           desc 'Git clone, build image, and push image to Docker Hub'
-          task :build => [:pull, :docker_build, :repo_tag, :push, 'kube:gen_rc']
+          task :build => [:pull, :prebuild, :docker_build, :repo_tag, :push, 'kube:gen_rc']
 
           namespace :kube do
             desc 'Generate replication controller for the current build'
@@ -70,4 +75,3 @@ module Dockerhelper
     end
   end
 end
-

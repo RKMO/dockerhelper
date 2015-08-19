@@ -15,6 +15,7 @@ module Dockerhelper
     attr_accessor :kube_rc_dest_dir
     attr_accessor :kube_rc_version
     attr_accessor :env_vars
+    attr_accessor :prebuild_command
 
     def initialize
       # defaults
@@ -39,14 +40,18 @@ module Dockerhelper
     end
 
     def check_env_vars!
-      return unless @env_vars
-      unless @env_vars.respond_to?(:reject)
+      return unless env_vars
+      unless env_vars.respond_to?(:reject)
         raise ArgumentError.new('Expected an array of env_vars')
       end
-      undefined = @env_vars.reject(&ENV.method(:has_key?))
+      undefined = env_vars.reject(&ENV.method(:has_key?))
       unless undefined.empty?
         raise StandardError.new("The environment must define #{undefined.join ', '}")
       end
+    end
+
+    def prebuild?
+      prebuild_command && !prebuild_command.empty?
     end
   end
 end
