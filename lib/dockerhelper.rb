@@ -12,8 +12,6 @@ module Dockerhelper
   module_function :cmd
 
   def self.configure(&block)
-    config = Config.new
-    block.call(config)
-    config
+    Config.new.tap(&block).tap(&:check_env_vars!)
   end
 end
