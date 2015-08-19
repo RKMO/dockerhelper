@@ -5,9 +5,11 @@ module Dockerhelper
     extend ::Rake::DSL
 
     def self.init(config)
+      build_tasks = [:pull, :docker_build, :repo_tag, :push]
+      build_tasks << :'kube:gen_rc' if config.kubernetes?
+
       namespace :docker do
         namespace(config.environment) do
-
           desc 'Print config info'
           task :info do
             puts config.inspect
@@ -40,34 +42,36 @@ module Dockerhelper
           end
 
           desc 'Git clone, build image, and push image to Docker Hub'
-          task :build => [:pull, :prebuild, :docker_build, :repo_tag, :push, 'kube:gen_rc']
+          task :build => build_tasks
 
-          namespace :kube do
-            desc 'Generate replication controller for the current build'
-            task :gen_rc do
-              config.kubernetes.write_replication_controller
-              puts "Created replication-controller: #{config.kubernetes.replication_controller_filename}"
-            end
+          if config.kubernetes?
+            namespace :kube do
+              desc 'Generate replication controller for the current build'
+              task :gen_rc do
+                config.kubernetes.write_replication_controller
+                puts "Created replication-controller: #{config.kubernetes.replication_controller_filename}"
+              end
 
-            desc 'Get current replication controller version'
-            task :current_rc do
-              puts config.kubernetes.current_rc
-            end
+              desc 'Get current replication controller version'
+              task :current_rc do
+                puts config.kubernetes.current_rc
+              end
 
-            desc 'Run replication controller rolling-update'
-            task :rolling_update => [:gen_rc] do
-              config.kubernetes.rolling_update
-            end
+              desc 'Run replication controller rolling-update'
+              task :rolling_update => [:gen_rc] do
+                config.kubernetes.rolling_update
+              end
 
-            desc 'Create replication controller'
-            task :create_rc => [:gen_rc] do
-              config.kubernetes.replication_controller_create
-            end
+              desc 'Create replication controller'
+              task :create_rc => [:gen_rc] do
+                config.kubernetes.replication_controller_create
+              end
 
-            desc 'Delete replication controller (USE WITH CAUTION)'
-            task :delete_rc do
-              # TODO add "are you sure?" prompt
-              config.kubernetes.replication_controller_delete
+              desc 'Delete replication controller (USE WITH CAUTION)'
+              task :delete_rc do
+                # TODO add "are you sure?" prompt
+                config.kubernetes.replication_controller_delete
+              end
             end
           end
         end

@@ -31,6 +31,10 @@ module Dockerhelper
       @docker ||= Docker.new(chdir: git_root)
     end
 
+    def kubernetes?
+      @kube_rc_template && @kube_rc_dest_dir
+    end
+
     def kubernetes
       @kubernetes ||= Kubernetes.new(self)
     end
