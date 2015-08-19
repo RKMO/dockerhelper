@@ -13,7 +13,7 @@ module Dockerhelper
     end
 
     def app_version
-      config.docker_repo_tag
+      config.kube_rc_version || config.docker_repo_tag
     end
 
     def app_full_name

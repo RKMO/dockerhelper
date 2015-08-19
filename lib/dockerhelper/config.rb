@@ -13,6 +13,7 @@ module Dockerhelper
     attr_accessor :environment
     attr_accessor :kube_rc_template
     attr_accessor :kube_rc_dest_dir
+    attr_accessor :kube_rc_version
 
     def initialize
       # defaults
