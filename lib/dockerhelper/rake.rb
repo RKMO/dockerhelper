@@ -5,7 +5,7 @@ module Dockerhelper
     extend ::Rake::DSL
 
     def self.init(config)
-      build_tasks = [:pull, :docker_build, :repo_tag, :push]
+      build_tasks = [:pull, :prebuild, :docker_build, :repo_tag, :push]
       build_tasks << :'kube:gen_rc' if config.kubernetes?
 
       namespace :docker do
