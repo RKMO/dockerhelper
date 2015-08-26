@@ -58,7 +58,7 @@ module Dockerhelper
               end
 
               desc 'Run replication controller rolling-update'
-              task :rolling_update => [:gen_rc] do
+              task :rolling_update do
                 config.kubernetes.rolling_update
               end
 
