@@ -25,12 +25,12 @@ module Dockerhelper
           end
 
           desc 'Prepare to build docker image'
-          task :prebuild do
+          task :prebuild => [:pull] do
             Command.new(config.prebuild_command, label: 'prebuild').run if config.prebuild?
           end
 
           desc 'Build docker image'
-          task :docker_build do
+          task :docker_build => [:prebuild] do
             config.docker.build(config.dockerfile, tag: config.docker_image)
           end
 
