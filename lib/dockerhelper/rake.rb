@@ -12,7 +12,16 @@ module Dockerhelper
         namespace(config.environment) do
           desc 'Print config info'
           task :info do
-            puts config.inspect
+            keys = %i(app_name git_root git_branch git_repo_url docker_repo
+              docker_image docker_tag rev_length dockerfile
+              docker_repo_tag_prefix environment kube_rc_template
+              kube_rc_dest_dir kube_rc_version env_vars prebuild_command
+              docker_repo_tag)
+            key_values = Hash[keys.map { |k| [k, config.send(k)] }]
+            max_key_length = keys.map(&:size).sort[-1]
+            key_values.each do |key, value|
+              puts sprintf("%#{max_key_length}s  %s\n", key, value)
+            end
           end
 
           desc 'Prepare to build docker image'
@@ -58,7 +67,7 @@ module Dockerhelper
               end
 
               desc 'Run replication controller rolling-update'
-              task :rolling_update => [:gen_rc] do
+              task :rolling_update do
                 config.kubernetes.rolling_update
               end
 
