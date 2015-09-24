@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Dockerhelper
   class Git
     attr_reader :git_root, :rev_length
@@ -5,6 +7,7 @@ module Dockerhelper
     def initialize(git_root, rev_length: 8)
       @git_root = git_root
       @rev_length = rev_length
+      FileUtils.mkdir_p(git_root)
     end
 
     def clone(git_repo_url, branch)

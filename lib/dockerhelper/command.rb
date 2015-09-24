@@ -56,6 +56,8 @@ module Dockerhelper
 
         exit_status = wait_thr.value
         $stdout.puts "<< #{yellow(cmd_prefix)} exit_status: #{exit_status}"
+
+        raise "Non-zero exit status; terminating." unless exit_status.success?
       end
     end
 
