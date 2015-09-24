@@ -11,7 +11,7 @@ module Dockerhelper
     end
 
     def capture
-      stdout, stderr, status = Open3.capture3(cmd)
+      stdout, stderr, status = Open3.capture3(cmd, chdir: chdir)
       pid = status.pid
       cmd_prefix = "[#{pid}#{label}]"
 
