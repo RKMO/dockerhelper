@@ -13,12 +13,25 @@ module Dockerhelper
     def clone(git_repo_url, branch)
       check_file = File.join(git_root, '.git')
       if File.exist?(check_file)
-        Command.new("git fetch --depth=1 origin #{branch}", label: 'git-fetch', chdir: git_root).run
-        Command.new("git checkout FETCH_HEAD", label: 'git-pull', chdir: git_root).run
+        git_fetch(branch)
+        git_checkout
       else
-        Command.new("git clone --depth=1 --branch #{branch} #{git_repo_url} #{git_root}",
-          label: 'git-clone', chdir: git_root).run
+        git_clone(git_repo_url, branch)
+        git_fetch(branch)
       end
+    end
+
+    def git_checkout
+      Command.new("git checkout FETCH_HEAD", label: 'git-pull', chdir: git_root).run
+    end
+
+    def git_clone(git_repo_url, branch)
+      Command.new("git clone --depth=1 --branch #{branch} #{git_repo_url} #{git_root}",
+        label: 'git-clone', chdir: git_root).run
+    end
+
+    def git_fetch(branch)
+      Command.new("git fetch --depth=1 origin #{branch}", label: 'git-fetch', chdir: git_root).run
     end
 
     def rev_list(max_count: 1, rev: 'FETCH_HEAD')
